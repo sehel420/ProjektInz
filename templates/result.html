@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Results</title>
+</head>
+<body>
+    <h1>Verification and Rule Analysis</h1>
+
+    <h2>Analysis</h2>
+    <ul>
+        <li>Unique Rules Count: {{ analysis['unique_rules_count'] }}</li>
+        <li>Min Length: {{ analysis['min_length'] }}</li>
+        <li>Avg Length: {{ analysis['avg_length'] }}</li>
+        <li>Max Length: {{ analysis['max_length'] }}</li>
+    </ul>
+
+    <h2>Unique Rules</h2>
+    <ul>
+        {% for rule in analysis['unique_rules'] %}
+        <li>Condition: {{ rule['condition'] }}, Decision: {{ rule['decision'] }}, Length: {{ rule['length'] }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Rule Length Analysis</h2>
+    <img src="data:image/png;base64,{{ plot_data }}">
+
+    <a href="/">Upload More Files</a>
+</body>
+</html>
