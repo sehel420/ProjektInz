@@ -6,6 +6,7 @@ from io import BytesIO
 import matplotlib.pyplot as plt
 from tkinter import Tk, filedialog, Label, Button, messagebox, Toplevel, Text, Scrollbar, RIGHT, Y, BOTH, Frame, OptionMenu, StringVar, Canvas, Frame, PhotoImage
 from typing import List
+from collections import Counter
 dataframes = []
 file_names = []
 generation_lock = False
@@ -168,6 +169,12 @@ def greedy_heuristic_decision_rules(df: pd.DataFrame) -> list:
         rules.append(rule)
         
     return rules
+def calculate_rule_support(rules, df):
+    rule_counts = Counter(frozenset(rule.items()) for rule in rules)
+    total_instances = len(df)
+    
+    rule_supports = {rule: count / total_instances for rule, count in rule_counts.items()}
+    return rule_supports
 
 def generate_decision_rules():
     global dataframes, file_names, generation_lock
@@ -191,7 +198,7 @@ def generate_decision_rules():
         rules = greedy_heuristic_decision_rules(df)
         unique_rules = {frozenset(rule.items()): rule for rule in rules}
         rule_lengths = [len(rule) - 1 for rule in rules]
-        rule_supports = [1 / len(rules) for _ in rules]
+        rule_supports = calculate_rule_support(rules, df)
         analysis = {
             "file_name": file_name,
             "total_rules_count": len(rules),
@@ -199,9 +206,9 @@ def generate_decision_rules():
             "min_length": min(rule_lengths),
             "avg_length": np.mean(rule_lengths),
             "max_length": max(rule_lengths),
-            "min_support": min(rule_supports),
-            "avg_support": np.mean(rule_supports),
-            "max_support": max(rule_supports),
+            "min_support": min(rule_supports.values()),
+            "avg_support": np.mean(list(rule_supports.values())),
+            "max_support": max(rule_supports.values()),
             "unique_rules": list(unique_rules.values()),
             "all_rules": rules
         }
